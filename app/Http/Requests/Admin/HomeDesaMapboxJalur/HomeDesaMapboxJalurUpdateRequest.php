@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Http\Requests\Admin\HomeDesaMapboxJalur;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class HomeDesaMapboxJalurUpdateRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'lat_long' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^-?([1-8]?[0-9](\.\d{1,15})?|90(\.0{1,15})?),\s*-?(1[0-7][0-9](\.\d{1,15})?|[1-9]?[0-9](\.\d{1,15})?)$/',
+            ],
+            'is_active' => 'nullable',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'name' => 'Titik',
+            'lat_long' => 'Latitude/Longitude',
+            'is_active' => 'Status',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'lat_long.regex' => 'Format :attribute tidak valid. Mohon masukkan dalam format "latitude, longitude", contoh:, "-8.409518, 115.188919".',
+        ];
+    }
+}

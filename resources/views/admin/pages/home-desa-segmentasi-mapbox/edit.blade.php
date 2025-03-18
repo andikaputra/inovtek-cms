@@ -1,0 +1,238 @@
+@extends('admin.layouts.app')
+
+@section('title', 'Mapbox Desa ' . $findDetailRegion->village . ' | Ubah Titik')
+
+@section('customCss')
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endsection
+
+@section('customJs')
+    <!-- Leaflet JS -->
+    @include('admin.pages.home-desa-segmentasi-mapbox.js._edit_js')
+@endsection
+
+
+@section('main')
+    <div class="page-heading">
+        <div class="page-title">
+            <div class="row">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3>Segmentasi Mapbox - Ubah Titik</h3>
+                </div>
+                <div class="col-12 col-md-6 order-md-2 order-first">
+                    <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item text-subtitle"><a
+                                    href="{{ route('admin.home.detail.desa.index', $findRegion->slug) }}">Dashboard
+                                    Desa</a>
+                            <li class="breadcrumb-item text-subtitle"><a
+                                    href="{{ route('admin.home.detail.desa.segmentasi-mapbox.index', ['id_provinsi' => $findRegion->slug, 'id_desa' => $findDetailRegion->slug]) }}">Segmentasi
+                                    Mapbox</a>
+                            <li class="breadcrumb-item active text-subtitle" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <section class="section">
+            <div class="row">
+                <div class="col-12 col-lg-4 col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                                    <div class="stats-icon purple mb-2">
+                                        <i class="bi bi-globe-asia-australia"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Nama Provinsi</h6>
+                                    <h4 class="font-extrabold mb-0">{{ $findRegion->province }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                                    <div class="stats-icon blue mb-2">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Nama Kabupaten/Wilayah</h6>
+                                    <h4 class="font-extrabold mb-0">{{ $findRegion->regency }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start">
+                                    <div class="stats-icon red mb-2">
+                                        <i class="bi bi-compass"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Nama Desa</h6>
+                                    <h4 class="font-extrabold mb-0">{{ $findDetailRegion->village }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (!$findRegion->is_active)
+                <div class="alert alert-warning text-white"><i class="bi bi-info-circle"></i> <small>Provinsi
+                        {{ $findRegion->province }} Kabupaten/Wilayah {{ $findRegion->regency }} saat ini sedang
+                        tidak aktif
+                        dan
+                        tidak akan muncul pada halaman INOVTEK</small>
+                </div>
+            @endif
+            @include('generals._validation')
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <span class="text-danger">* Wajib diisi</span>
+                </div>
+                <div class="card-body">
+                    <section id="basic-horizontal-layouts">
+                        <form class="form form-horizontal"
+                            action="{{ route('admin.home.detail.desa.segmentasi-mapbox.update', ['id_provinsi' => $findRegion->slug, 'id_desa' => $findDetailRegion->slug, 'id' => $findDetailRegionMapbox->id]) }}"
+                            method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 mt-2">
+                                        <label>Nama Titik<span class="text-danger"> *</span></label>
+                                        <div class="form-group has-icon-left">
+                                            <div class="position-relative">
+                                                <input type="text" required
+                                                    class="form-control @error('name') is-invalid @enderror"
+                                                    placeholder="Nama Titik" name="name"
+                                                    value="{{ old('name') ?? $findDetailRegionMapbox->name }}">
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-cursor"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 mt-2">
+                                        <label>Jenis Titik<span class="text-danger"> *</span></label>
+                                        <div class="form-group has-icon-left">
+                                            <div class="position-relative">
+                                                <select name="type" required
+                                                    class="form-control @error('type') is-invalid @enderror" id="type">
+                                                    @foreach (\App\Constants\AppConst::POINT_TYPE_MAPPING as $index => $item)
+                                                        <option value="{{ $index }}"
+                                                            {{ $findDetailRegionMapbox->type == $index ? 'selected' : '' }}>
+                                                            {{ $item }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-list-ul"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-2">
+                                        <label>Map Url</label>
+                                        <div class="form-group has-icon-left">
+                                            <div class="position-relative">
+                                                <input type="text"
+                                                    class="form-control @error('map_url') is-invalid @enderror"
+                                                    placeholder="Map Url" name="map_url"
+                                                    value="{{ old('map_url') ?? $findDetailRegionMapbox->map_url }}">
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-pin-map"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-2">
+                                        <label>360 VR Tour Url</label>
+                                        <div class="form-group has-icon-left">
+                                            <div class="position-relative">
+                                                <input type="text"
+                                                    class="form-control @error('vr_url') is-invalid @enderror"
+                                                    placeholder="360 VR Tour Url" name="vr_url"
+                                                    value="{{ old('vr_url') ?? $findDetailRegionMapbox->vr_url }}">
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-badge-vr"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-2">
+                                        <label>360 VR Tour Youtube Url</label>
+                                        <div class="form-group has-icon-left">
+                                            <div class="position-relative">
+                                                <input type="text"
+                                                    class="form-control @error('vr_youtube_url') is-invalid @enderror"
+                                                    placeholder="VR 360 Youtube Tour Url" name="vr_youtube_url"
+                                                    value="{{ old('vr_youtube_url') ?? $findDetailRegionMapbox->vr_youtube_url }}">
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-youtube"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 mt-2">
+                                        <label>Latitude dan Longitude<span class="text-danger"> *</span></label>
+                                        <div class="form-group has-icon-left">
+                                            <div class="position-relative">
+                                                <input type="text" required class="form-control"
+                                                    placeholder="Latitude dan Longitude"
+                                                    value="{{ $findDetailRegionMapbox->latitude . ', ' . $findDetailRegionMapbox->longitude }}"
+                                                    id="lat_long" name="lat_long">
+                                                <div class="form-control-icon">
+                                                    <i class="bi bi-geo-alt-fill"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-2 mt-2">
+                                        <div class="form-check form-check-lg d-flex align-items-end mt-4">
+                                            <input class="form-check-input me-2" type="checkbox" name="is_active"
+                                                value="active" id="is_active"
+                                                {{ $findDetailRegionMapbox->is_active == true ? 'checked' : '' }}>
+                                            <label class="form-check-label text-gray-600" for="is_active">
+                                                Aktifkan Titik
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-2 mt-2">
+                                        <div class="form-check form-check-lg d-flex align-items-end mt-4">
+                                            <input class="form-check-input me-2" type="checkbox" name="is_drone"
+                                                value="active" id="is_drone"
+                                                {{ $findDetailRegionMapbox->is_drone == true ? 'checked' : '' }}>
+                                            <label class="form-check-label text-gray-600" for="is_drone">
+                                                Tampilan Drone
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 mb-3">
+                                        <div id="map"></div>
+                                    </div>
+                                </div>
+                                <div class="col-12 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-sm btn-primary me-1 mb-1">Simpan
+                                        Data</button>
+                                    <button type="reset" class="btn btn-sm btn-light-secondary me-1 mb-1">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </div>
+@endsection
